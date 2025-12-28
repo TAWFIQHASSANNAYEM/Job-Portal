@@ -3,6 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from django.http import JsonResponse
 from .models import User, RecruiterProfile, JobSeekerProfile, Job, JobApplication
 from .forms import JobForm, RecruiterProfileForm, JobSeekerProfileForm, UserRegistrationForm
 
