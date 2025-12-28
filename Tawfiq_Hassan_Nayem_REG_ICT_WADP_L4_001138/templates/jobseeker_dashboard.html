@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Seeker Dashboard - Job Portal{% endblock %}
+
+{% block content %}
+<h2>Welcome, {{ user.display_name }} (Job Seeker)</h2>
+<p>Skills: {{ profile.skills }}</p>
+{% if profile.resume %}
+    <p>Resume: <a href="{{ profile.resume.url }}" download>Download Resume</a></p>
+{% endif %}
+<a href="{% url 'edit_jobseeker_profile' %}" class="btn btn-primary mb-3">Edit Profile</a>
+
+<h3>Applied Jobs</h3>
+{% if applied_applications %}
+    <div class="row">
+        {% for application in applied_applications %}
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ application.job.title }}</h5>
+                        <p class="card-text">{{ application.job.job_description|truncatechars:150 }}</p>
+                        <p class="card-text"><small class="text-muted">Category: {{ application.job.category }}</small></p>
+                        <p class="card-text"><small class="text-muted">Skills: {{ application.job.skills_required }}</small></p>
+                        {% if application.job.location %}
+                            <p class="card-text"><small class="text-muted">Location: {{ application.job.location }}</small></p>
+                        {% endif %}
+                        {% if application.job.salary %}
+                            <p class="card-text"><small class="text-muted">Salary: {{ application.job.salary }}</small></p>
+                        {% endif %}
+                        <p class="card-text"><strong>Status: {{ application.get_status_display }}</strong></p>
+                        <button class="btn btn-secondary" disabled>Already Applied</button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No applied jobs yet.</p>
+{% endif %}
+
+<h3>Skill-Matched Jobs</h3>
+<a href="{% url 'search_jobs' %}" class="btn btn-primary mb-3">Search All Jobs</a>
+{% if matched_jobs %}
+    <div class="row">
+        {% for job in matched_jobs %}
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ job.title }}</h5>
+                        <p class="card-text">{{ job.job_description|truncatechars:150 }}</p>
+                        <p class="card-text"><small class="text-muted">Category: {{ job.category }}</small></p>
+                        <p class="card-text"><small class="text-muted">Skills: {{ job.skills_required }}</small></p>
+                        {% if job.location %}
+                            <p class="card-text"><small class="text-muted">Location: {{ job.location }}</small></p>
+                        {% endif %}
+                        {% if job.salary %}
+                            <p class="card-text"><small class="text-muted">Salary: {{ job.salary }}</small></p>
+                        {% endif %}
+                        {% if job.id in applied_jobs %}
+                            <button class="btn btn-secondary" disabled>Already Applied</button>
+                        {% else %}
+                            <a href="{% url 'apply_job' job.id %}" class="btn btn-primary">Apply</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No skill-matched jobs found. Try searching for jobs.</p>
+{% endif %}
+{% endblock %}

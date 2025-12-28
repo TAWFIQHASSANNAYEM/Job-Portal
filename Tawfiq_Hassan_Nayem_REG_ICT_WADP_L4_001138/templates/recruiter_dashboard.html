@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Recruiter Dashboard - Job Portal{% endblock %}
+
+{% block content %}
+<h2>Welcome, {{ user.display_name }} (Recruiter)</h2>
+<p>Company: {{ profile.company_name }}</p>
+<a href="{% url 'edit_recruiter_profile' %}" class="btn btn-primary mb-3">Edit Profile</a>
+
+<h3>Your Job Postings</h3>
+<a href="{% url 'post_job' %}" class="btn btn-success mb-3">Post New Job</a>
+{% if jobs %}
+    <div class="row">
+        {% for job in jobs %}
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ job.title }}</h5>
+                        <p class="card-text">{{ job.job_description|truncatechars:100 }}</p>
+                        <p class="card-text"><small class="text-muted">Category: {{ job.category }}</small></p>
+                        <p class="card-text"><small class="text-muted">Openings: {{ job.number_of_openings }}</small></p>
+                        {% if job.location %}
+                            <p class="card-text"><small class="text-muted">Location: {{ job.location }}</small></p>
+                        {% endif %}
+                        {% if job.salary %}
+                            <p class="card-text"><small class="text-muted">Salary: {{ job.salary }}</small></p>
+                        {% endif %}
+                        <div class="mt-2">
+                            <a href="{% url 'edit_job' job.id %}" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="{% url 'delete_job' job.id %}" class="btn btn-danger btn-sm">Delete</a>
+                            <a href="{% url 'view_applicants' job.id %}" class="btn btn-info btn-sm">View Applicants</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No jobs posted yet.</p>
+{% endif %}
+{% endblock %}

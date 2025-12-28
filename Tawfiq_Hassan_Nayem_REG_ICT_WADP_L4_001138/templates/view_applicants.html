@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Applicants for {{ job.title }} - Job Portal{% endblock %}
+
+{% block content %}
+<h2>Applicants for: {{ job.title }}</h2>
+<p>{{ job.job_description|truncatechars:100 }}</p>
+
+{% if applications %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Applicant Name</th>
+                    <th>Email</th>
+                    <th>Skills</th>
+                    <th>Resume</th>
+                    <th>Status</th>
+                    <th>Applied At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                    <tr>
+                        <td>{{ application.jobseeker.display_name }}</td>
+                        <td>{{ application.jobseeker.email }}</td>
+                        <td>{{ application.jobseeker.jobseekerprofile.skills }}</td>
+                        <td>
+                            {% if application.jobseeker.jobseekerprofile.resume %}
+                                <a href="{{ application.jobseeker.jobseekerprofile.resume.url }}" class="btn btn-sm btn-primary" download>Download Resume</a>
+                            {% else %}
+                                No Resume
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="application_id" value="{{ application.id }}">
+                                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="pending" {% if application.status == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="accepted" {% if application.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                                    <option value="rejected" {% if application.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                            </form>
+                        </td>
+                        <td>{{ application.applied_at|date:"M d, Y H:i" }}</td>
+                        <td>
+                            <a href="mailto:{{ application.jobseeker.email }}" class="btn btn-sm btn-info">Contact</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p>No applicants yet.</p>
+{% endif %}
+
+<a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+{% endblock %}
